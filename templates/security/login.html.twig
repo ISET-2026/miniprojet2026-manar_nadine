@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h5 class="section-title">Espace Membre</h5>
+        <h1 class="display-3 text-white mb-0">Connexion</h1>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 wow fadeIn" data-wow-delay="0.1s">
+
+            <div style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4 text-center" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <div class="fs-1 mb-2">🔐</div>
+                    <h4 class="text-white mb-0">Bon retour !</h4>
+                </div>
+
+                <div class="p-5 form-dark">
+                    {% if error %}
+                        <div class="alert alert-danger rounded-0 mb-4">
+                            <i class="bi bi-exclamation-circle me-2"></i>
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
+
+                    <form method="post">
+                        <div class="mb-4">
+                            <label for="inputEmail" class="form-label text-secondary">Adresse email</label>
+                            <input type="email" value="{{ last_username }}" name="email"
+                                   id="inputEmail" class="form-control"
+                                   autocomplete="email" autofocus required
+                                   placeholder="exemple@email.com">
+                        </div>
+                        <div class="mb-4">
+                            <label for="inputPassword" class="form-label text-secondary">Mot de passe</label>
+                            <input type="password" name="password" id="inputPassword"
+                                   class="form-control" autocomplete="current-password" required
+                                   placeholder="••••••••">
+                        </div>
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" name="_remember_me" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label text-secondary" for="rememberMe">Se souvenir de moi</label>
+                        </div>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        <button type="submit" class="btn btn-primary w-100 py-3">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                        </button>
+                    </form>
+
+                    <hr style="border-color:#333;">
+                    <p class="text-center text-secondary mb-0">
+                        Pas encore de compte ?
+                        <a href="{{ path('app_register') }}" class="text-primary">S'inscrire gratuitement</a>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="mb-5"></div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+{% block title %}Catégories{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h5 class="section-title">Administration</h5>
+        <h1 class="display-3 text-white mb-0">Gérer les Catégories</h1>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+    <div class="row gx-5">
+
+        {# Liste #}
+        <div class="col-lg-7 mb-5 wow fadeIn" data-wow-delay="0.1s">
+            <div style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-grid text-primary me-2"></i>Catégories ({{ categories|length }})</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0" style="color:#aaa;">
+                        <thead style="background:#111;color:var(--ch-primary);">
+                            <tr>
+                                <th class="px-4 py-3" style="border-color:#333;">Icône</th>
+                                <th style="border-color:#333;">Nom</th>
+                                <th style="border-color:#333;">Description</th>
+                                <th style="border-color:#333;">Recettes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cat in categories %}
+                            <tr style="border-color:#333;">
+                                <td class="px-4 fs-4">{{ cat.icone }}</td>
+                                <td><strong class="text-white">{{ cat.nom }}</strong></td>
+                                <td><small class="text-secondary">{{ cat.description|slice(0,60) }}{% if cat.description|length > 60 %}…{% endif %}</small></td>
+                                <td>
+                                    <span class="py-1 px-3 bg-dark rounded-pill text-primary small">{{ cat.recettes|length }}</span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="4" class="text-center text-secondary py-5">Aucune catégorie créée.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# Formulaire de création #}
+        <div class="col-lg-5 wow fadeIn" data-wow-delay="0.3s">
+            <div style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-plus-circle text-primary me-2"></i>Nouvelle catégorie</h4>
+                </div>
+                <div class="p-4 form-dark">
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            <label class="form-label text-secondary">Nom *</label>
+                            {{ form_widget(form.nom, {attr: {class: 'form-control', placeholder: 'Ex: Dessert'}}) }}
+                            {{ form_errors(form.nom) }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary">Icône (emoji)</label>
+                            {{ form_widget(form.icone, {attr: {class: 'form-control', placeholder: '🍰'}}) }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Description</label>
+                            {{ form_widget(form.description, {attr: {class: 'form-control', rows: 3, placeholder: 'Description optionnelle...'}}) }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3">
+                            <i class="bi bi-plus-circle me-2"></i>Créer la catégorie
+                        </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="mb-5"></div>
+{% endblock %}

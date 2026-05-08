@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes Favoris{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h5 class="section-title">Ma Collection</h5>
+        <h1 class="display-3 text-white mb-0">⭐ Mes Recettes Favorites</h1>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+
+    {% if pagination.getTotalItemCount == 0 %}
+    <div class="text-center py-5 wow fadeIn" data-wow-delay="0.1s">
+        <div style="font-size:5rem;">⭐</div>
+        <h3 class="text-secondary mt-4">Aucune recette en favori</h3>
+        <p class="text-secondary">Explorez nos recettes et ajoutez vos coups de cœur !</p>
+        <a href="{{ path('recette_index') }}" class="btn btn-primary py-3 px-5 mt-3">
+            Explorer les recettes
+        </a>
+    </div>
+    {% else %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="text-secondary mb-0">
+            <strong class="text-primary">{{ pagination.getTotalItemCount }}</strong>
+            recette{{ pagination.getTotalItemCount > 1 ? 's' : '' }} en favori
+        </p>
+        <a href="{{ path('recette_index') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-plus"></i> Ajouter des recettes
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for recette in pagination %}
+            {% include 'recipe/_card.html.twig' %}
+        {% endfor %}
+    </div>
+
+    <div class="d-flex justify-content-center mt-5 mb-4">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+    {% endif %}
+</div>
+{% endblock %}

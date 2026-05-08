@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; background: #fafaf8; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,.1); }
+        .header { background: #2d2d2d; color: #fff; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .body { padding: 30px; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+        .facile    { background: #d4edda; color: #155724; }
+        .moyen     { background: #fff3cd; color: #856404; }
+        .difficile { background: #f8d7da; color: #721c24; }
+        .footer { background: #f8f8f8; padding: 20px; text-align: center; color: #888; font-size: 12px; }
+        .btn { display: inline-block; padding: 12px 28px; background: #f0b429; color: #2d2d2d; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .info-row { display: flex; gap: 16px; margin: 16px 0; }
+        .info-item { flex: 1; background: #f8f8f8; padding: 12px; border-radius: 8px; text-align: center; }
+        .info-item .val { font-size: 20px; font-weight: bold; color: #2d2d2d; }
+        .info-item .lbl { font-size: 11px; color: #888; margin-top: 2px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <div style="font-size: 40px; margin-bottom: 8px;">🍽️</div>
+        <h1>Nouvelle recette publiée !</h1>
+        <p style="margin: 4px 0 0; opacity: .8;">RecipeHub vous informe</p>
+    </div>
+
+    <div class="body">
+        <h2 style="color: #2d2d2d;">{{ recette.titre }}</h2>
+
+        <p>
+            {% if recette.categorie %}
+                <strong>{{ recette.categorie.icone }} {{ recette.categorie.nom }}</strong> &nbsp;·&nbsp;
+            {% endif %}
+            <span class="badge {{ recette.difficulte }}">
+                {% if recette.difficulte == 'facile' %}🟢{% elseif recette.difficulte == 'moyen' %}🟡{% else %}🔴{% endif %}
+                {{ recette.difficulte|capitalize }}
+            </span>
+        </p>
+
+        <div class="info-row">
+            <div class="info-item">
+                <div class="val">{{ recette.tempsPreparation }} min</div>
+                <div class="lbl">⏱️ Préparation</div>
+            </div>
+            {% if recette.tempsCuisson %}
+            <div class="info-item">
+                <div class="val">{{ recette.tempsCuisson }} min</div>
+                <div class="lbl">🔥 Cuisson</div>
+            </div>
+            {% endif %}
+            <div class="info-item">
+                <div class="val">{{ recette.nbPersonnes }}</div>
+                <div class="lbl">👥 Personnes</div>
+            </div>
+        </div>
+
+        <p style="color: #555; line-height: 1.6;">
+            {{ recette.description|slice(0, 200) }}{% if recette.description|length > 200 %}…{% endif %}
+        </p>
+
+        {% if recette.auteur %}
+        <p style="color: #888;">
+            Publiée par <strong>{{ recette.auteur.pseudo }}</strong>
+        </p>
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 28px;">
+            <a href="{{ app.request.schemeAndHttpHost }}/recettes/{{ recette.id }}" class="btn">
+                Voir la recette complète →
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Vous recevez cet email car vous êtes membre de RecipeHub.</p>
+        <p>© {{ "now"|date("Y") }} RecipeHub — noreply@recipehub.com</p>
+    </div>
+
+</div>
+</body>
+</html>

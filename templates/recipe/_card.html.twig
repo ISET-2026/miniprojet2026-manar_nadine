@@ -1,0 +1,63 @@
+<div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.1s">
+    <div class="recipe-card h-100">
+
+        {# Image / placeholder #}
+        <div class="position-relative overflow-hidden">
+            {% if recette.imageName %}
+                <img class="r-img img-fluid w-100" src="/uploads/recettes/{{ recette.imageName }}" alt="{{ recette.titre }}">
+            {% else %}
+                <div class="r-placeholder">{{ recette.categorie ? recette.categorie.icone : '🍽️' }}</div>
+            {% endif %}
+
+            {# Overlay avec catégorie + difficulté #}
+            <div class="position-absolute bottom-0 end-0 mb-3 me-3 d-flex flex-column align-items-end gap-1">
+                {% if recette.categorie %}
+                    <span class="py-1 px-3 bg-dark rounded-pill text-primary small">
+                        {{ recette.categorie.icone }} {{ recette.categorie.nom }}
+                    </span>
+                {% endif %}
+                <span class="bdiff-{{ recette.difficulte }}">
+                    {% if recette.difficulte == 'facile' %}🟢{% elseif recette.difficulte == 'moyen' %}🟡{% else %}🔴{% endif %}
+                    {{ recette.difficulte|capitalize }}
+                </span>
+            </div>
+        </div>
+
+        {# Body #}
+        <div class="r-body">
+            {# Tags #}
+            {% if recette.tags is not empty %}
+            <div class="mb-2">
+                {% for tag in recette.tags %}
+                    <span class="tag-badge" style="background-color:{{ tag.couleur }};">{{ tag.nom }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <h5 class="r-title mb-1">
+                <a href="{{ path('recette_show', {id: recette.id}) }}">{{ recette.titre }}</a>
+            </h5>
+
+            <div class="r-meta d-flex flex-wrap gap-3 my-2">
+                <span><i class="bi bi-clock text-primary"></i> {{ (recette.tempsPreparation + (recette.tempsCuisson ?? 0))|cooking_time_format }}</span>
+                <span><i class="bi bi-people text-primary"></i> {{ recette.nbPersonnes }} pers.</span>
+                <span>{{ difficulty_stars(recette.difficulte) }}</span>
+            </div>
+
+            <p class="text-secondary small mb-3" style="line-height:1.5;">
+                {{ recette.description|slice(0,90) }}{% if recette.description|length > 90 %}…{% endif %}
+            </p>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-secondary" style="font-size:.72rem;">
+                    {{ recette.dateCreation|time_ago }}
+                    {% if recette.auteur %} · {{ recette.auteur.pseudo }}{% endif %}
+                </small>
+                <a href="{{ path('recette_show', {id: recette.id}) }}" class="btn btn-primary btn-sm" style="font-size:.78rem;">
+                    Voir <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>

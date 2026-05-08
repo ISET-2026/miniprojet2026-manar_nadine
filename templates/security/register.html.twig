@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h5 class="section-title">Rejoignez-nous</h5>
+        <h1 class="display-3 text-white mb-0">Créer un Compte</h1>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 wow fadeIn" data-wow-delay="0.1s">
+
+            <div style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4 text-center" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <div class="fs-1 mb-2">👨‍🍳</div>
+                    <h4 class="text-white mb-0">Devenez membre</h4>
+                    <p class="text-secondary small mb-0">Partagez vos recettes avec la communauté</p>
+                </div>
+
+                <div class="p-5 form-dark">
+                    {{ form_errors(form) }}
+
+                    {{ form_start(form) }}
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Pseudo *</label>
+                            {{ form_widget(form.pseudo, {attr: {class: 'form-control', placeholder: 'Votre pseudo de cuisine'}}) }}
+                            {{ form_errors(form.pseudo) }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Adresse email *</label>
+                            {{ form_widget(form.email, {attr: {class: 'form-control', placeholder: 'exemple@email.com'}}) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Mot de passe *</label>
+                            {{ form_widget(form.plainPassword, {attr: {class: 'form-control', placeholder: 'Min. 6 caractères'}}) }}
+                            {{ form_errors(form.plainPassword) }}
+                        </div>
+                        <div class="mb-4 form-check">
+                            {{ form_widget(form.agreeTerms, {attr: {class: 'form-check-input'}}) }}
+                            <label class="form-check-label text-secondary" for="{{ form.agreeTerms.vars.id }}">
+                                J'accepte les conditions d'utilisation
+                            </label>
+                            {{ form_errors(form.agreeTerms) }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3">
+                            <i class="bi bi-person-plus me-2"></i>Créer mon compte
+                        </button>
+                    {{ form_end(form) }}
+
+                    <hr style="border-color:#333;">
+                    <p class="text-center text-secondary mb-0">
+                        Déjà membre ?
+                        <a href="{{ path('app_login') }}" class="text-primary">Se connecter</a>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="mb-5"></div>
+{% endblock %}

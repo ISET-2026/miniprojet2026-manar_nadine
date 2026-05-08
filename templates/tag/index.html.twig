@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+{% block title %}Tags{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h5 class="section-title">Administration</h5>
+        <h1 class="display-3 text-white mb-0">Gérer les Tags</h1>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+    <div class="row gx-5">
+
+        {# Liste des tags #}
+        <div class="col-lg-7 mb-5 wow fadeIn" data-wow-delay="0.1s">
+            <div style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-tags text-primary me-2"></i>Tags ({{ tags|length }})</h4>
+                </div>
+                <div class="p-4">
+                    {% if tags is not empty %}
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for tag in tags %}
+                        <div class="d-flex align-items-center gap-2 p-2" style="background:#111;border-radius:8px;">
+                            <span class="tag-badge fs-6" style="background-color:{{ tag.couleur }};">{{ tag.nom }}</span>
+                            <small class="text-secondary">{{ tag.recettes|length }} recette{{ tag.recettes|length > 1 ? 's' : '' }}</small>
+                            <form method="post" action="{{ path('tag_delete', {id: tag.id}) }}" id="form-tag-{{ tag.id }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-tag-' ~ tag.id) }}">
+                                <button type="button" class="btn btn-link btn-sm text-danger p-0 btn-delete-confirm"
+                                        data-form-id="form-tag-{{ tag.id }}"
+                                        data-title="Supprimer ce tag ?"
+                                        data-text="{{ tag.nom }}">
+                                    <i class="bi bi-x-circle fs-5"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-secondary text-center py-4">Aucun tag créé pour le moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# Formulaire de création #}
+        <div class="col-lg-5 wow fadeIn" data-wow-delay="0.3s">
+            <div style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-plus-circle text-primary me-2"></i>Nouveau tag</h4>
+                </div>
+                <div class="p-4 form-dark">
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            <label class="form-label text-secondary">Nom *</label>
+                            {{ form_widget(form.nom, {attr: {class: 'form-control', placeholder: 'Ex: Végétarien'}}) }}
+                            {{ form_errors(form.nom) }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Couleur</label>
+                            <div class="d-flex gap-2 align-items-center">
+                                {{ form_widget(form.couleur, {attr: {class: 'form-control form-control-color', style: 'width:60px;height:45px;'}}) }}
+                                <small class="text-secondary">Choisissez la couleur du badge</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3">
+                            <i class="bi bi-plus-circle me-2"></i>Créer le tag
+                        </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="mb-5"></div>
+{% endblock %}

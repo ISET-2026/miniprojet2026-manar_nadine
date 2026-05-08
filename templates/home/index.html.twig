@@ -1,0 +1,224 @@
+{% extends 'base.html.twig' %}
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+
+{# ── Hero ── #}
+<div class="container-fluid p-5 mb-5 bg-dark text-secondary">
+    <div class="row g-5 py-5">
+        <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
+            <h1 class="display-1 text-secondary text-center mb-0">🍽️ RecipeHub</h1>
+            <p class="text-center text-secondary mt-3 fs-5">Découvrez, partagez et créez des recettes avec notre communauté de passionnés</p>
+        </div>
+        <div class="col-lg-4 wow fadeIn" data-wow-delay="0.1s">
+            <img class="img-fluid rounded mb-3" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600" alt="cuisine">
+            <p><i class="bi bi-arrow-down animate-up-down" style="font-size:3rem;"></i></p>
+            <p class="mb-0">Plongez dans un univers culinaire riche et varié. Chaque recette est une invitation au voyage gustatif, conçue avec amour par notre communauté de cuisiniers passionnés.</p>
+        </div>
+        <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s" style="min-height:500px;">
+            <div class="position-relative h-100">
+                <img class="position-absolute w-100 h-100 rounded" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600" style="object-fit:cover;" alt="recettes">
+            </div>
+        </div>
+        <div class="col-lg-4 wow fadeIn" data-wow-delay="0.5s">
+            <p>Des recettes faciles aux créations gastronomiques les plus élaborées — RecipeHub rassemble toutes les saveurs du monde sur une seule plateforme.</p>
+            <p><i class="bi bi-arrow-up animate-up-down" style="font-size:3rem;"></i></p>
+            <img class="img-fluid rounded" src="https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?w=600" alt="ingrédients">
+        </div>
+    </div>
+</div>
+
+{# ── Stats ── #}
+<div class="container-fluid bg-dark facts p-5 my-5">
+    <div class="row gx-5 gy-4 py-5">
+        <div class="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.1s">
+            <div class="d-flex">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;background:#111111;">
+                    <i class="fa fa-utensils fs-4 text-primary"></i>
+                </div>
+                <div class="ps-4">
+                    <h5 class="text-white">Recettes</h5>
+                    <h1 class="display-5 text-secondary mb-0" data-toggle="counter-up">{{ stats.totalPubliees }}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.2s">
+            <div class="d-flex">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;background:#111111;">
+                    <i class="fa fa-tags fs-4 text-primary"></i>
+                </div>
+                <div class="ps-4">
+                    <h5 class="text-white">Catégories</h5>
+                    <h1 class="display-5 text-secondary mb-0" data-toggle="counter-up">{{ stats.parCategorie|length }}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.3s">
+            <div class="d-flex">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;background:#111111;">
+                    <i class="fa fa-leaf fs-4 text-primary"></i>
+                </div>
+                <div class="ps-4">
+                    <h5 class="text-white">Ingrédients moy.</h5>
+                    <h1 class="display-5 text-secondary mb-0">{{ stats.moyenneIngredients }}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 wow fadeIn" data-wow-delay="0.4s">
+            <div class="d-flex">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;background:#111111;">
+                    <i class="fa fa-star fs-4 text-primary"></i>
+                </div>
+                <div class="ps-4">
+                    <h5 class="text-white">Qualité</h5>
+                    <h1 class="display-5 text-secondary mb-0">5 ★</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ── Features ── #}
+<div class="container-fluid feature position-relative p-5 pb-0 mt-5">
+    <div class="row g-5 gb-5">
+        <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.1s">
+            <div class="feature-item rounded text-center p-5">
+                <div class="fs-1 mb-3">🥗</div>
+                <h3 class="my-4">Recettes Variées</h3>
+                <p class="text-secondary">Des entrées aux desserts, découvrez des centaines de recettes pour toutes les occasions et tous les goûts.</p>
+                <a class="font-body text-primary" style="letter-spacing:1px;" href="{{ path('recette_index') }}">Explorer <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.3s">
+            <div class="feature-item rounded text-center p-5">
+                <div class="fs-1 mb-3">👨‍🍳</div>
+                <h3 class="my-4">Communauté Active</h3>
+                <p class="text-secondary">Partagez vos créations culinaires, commentez et échangez avec d'autres passionnés de cuisine du monde entier.</p>
+                <a class="font-body text-primary" style="letter-spacing:1px;" href="{{ path('app_register') }}">Rejoindre <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="0.5s">
+            <div class="feature-item rounded text-center p-5">
+                <div class="fs-1 mb-3">⭐</div>
+                <h3 class="my-4">Favoris & Recherche</h3>
+                <p class="text-secondary">Sauvegardez vos recettes préférées, recherchez par catégorie, difficulté ou tag pour trouver l'inspiration.</p>
+                <a class="font-body text-primary" style="letter-spacing:1px;" href="{{ path('recette_index') }}">Rechercher <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-12 text-center wow fadeIn" data-wow-delay="0.1s">
+            <h1 class="display-4 text-secondary mb-4">
+                <span class="text-primary">Recettes fraîches</span><br>publiées chaque semaine
+            </h1>
+            {% if is_granted('ROLE_CUISINIER') %}
+                <a href="{{ path('recette_new') }}" class="btn btn-primary py-3 px-5">Partager une recette</a>
+            {% else %}
+                <a href="{{ path('app_register') }}" class="btn btn-primary py-3 px-5">Commencer maintenant</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# ── Dernières recettes (Menu style) ── #}
+<div class="container-fluid menu py-5 px-0">
+    <div class="mb-5 text-center wow fadeIn" data-wow-delay="0.1s" style="max-width:700px;margin:auto;">
+        <h5 class="section-title">Nos Recettes</h5>
+        <h1 class="display-3 mb-0">Les Dernières Publications</h1>
+    </div>
+
+    {% if dernieres is not empty %}
+    <div class="tab-class text-center">
+        <div class="tab-content">
+            <div class="tab-pane fade show p-0 active">
+                <div class="row g-0">
+                    {% for recette in dernieres %}
+                    <div class="col-lg-4 col-md-6 wow fadeIn" data-wow-delay="{{ loop.index * 0.2 }}s">
+                        <div class="position-relative overflow-hidden">
+                            {% if recette.imageName %}
+                                <img class="img-fluid w-100" src="/uploads/recettes/{{ recette.imageName }}"
+                                     style="height:280px;object-fit:cover;" alt="{{ recette.titre }}">
+                            {% else %}
+                                <div style="height:280px;background:#111;display:flex;align-items:center;justify-content:center;font-size:5rem;">
+                                    {{ recette.categorie ? recette.categorie.icone : '🍽️' }}
+                                </div>
+                            {% endif %}
+                            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background:linear-gradient(transparent,rgba(0,0,0,.85));">
+                                <a href="{{ path('recette_show', {id: recette.id}) }}" class="text-white text-decoration-none">
+                                    <h5 class="mb-1">{{ recette.titre }}</h5>
+                                </a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <span class="bdiff-{{ recette.difficulte }}">{{ recette.difficulte|capitalize }}</span>
+                                    <small class="text-secondary">
+                                        <i class="bi bi-clock"></i> {{ (recette.tempsPreparation + (recette.tempsCuisson ?? 0))|cooking_time_format }}
+                                    </small>
+                                    {% if recette.categorie %}
+                                        <small class="text-primary">{{ recette.categorie.icone }} {{ recette.categorie.nom }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{{ path('recette_index') }}" class="btn btn-primary py-3 px-5">Voir toutes les recettes</a>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-secondary">
+        <p class="fs-5">Aucune recette publiée pour l'instant.</p>
+        {% if is_granted('ROLE_CUISINIER') %}
+            <a href="{{ path('recette_new') }}" class="btn btn-primary">Soyez le premier à partager !</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{# ── Répartition par catégorie ── #}
+{% if stats.parCategorie is not empty %}
+<div class="container-fluid p-5 bg-dark">
+    <div class="mb-5 text-center wow fadeIn" data-wow-delay="0.1s" style="max-width:700px;margin:auto;">
+        <h5 class="section-title">Catégories</h5>
+        <h1 class="display-3 text-secondary mb-0">Explorez par Catégorie</h1>
+    </div>
+    <div class="row g-4 justify-content-center">
+        {% for categorie, nb in stats.parCategorie %}
+        <div class="col-6 col-md-4 col-lg-2 wow fadeIn" data-wow-delay="{{ loop.index * 0.1 }}s">
+            <div class="text-center p-4" style="background:#111;border-radius:8px;">
+                <div class="fs-2 mb-2">{{ loop.index == 1 ? '🥗' : (loop.index == 2 ? '🍝' : (loop.index == 3 ? '🍰' : (loop.index == 4 ? '🥤' : (loop.index == 5 ? '🍕' : '🥣')))) }}</div>
+                <h2 class="display-5 text-primary mb-1">{{ nb }}</h2>
+                <p class="text-secondary small mb-0">{{ categorie }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{# ── Instagram strip (images déco) ── #}
+<div class="container-fluid position-relative instagram p-0 mt-5">
+    <a href="{{ path('recette_index') }}"
+       class="d-flex align-items-center justify-content-center position-absolute top-50 start-50 translate-middle bg-white rounded-circle"
+       style="width:100px;height:100px;z-index:1;">
+        <i class="fa fa-utensils fa-2x text-primary"></i>
+    </a>
+    <div class="row g-0">
+        {% set imgs = [
+            'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400',
+            'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+            'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400',
+            'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=400',
+            'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
+            'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400'
+        ] %}
+        {% for img in imgs %}
+        <div class="col-lg-2 col-md-3 col-sm-4 wow fadeIn" data-wow-delay="{{ loop.index * 0.1 }}s">
+            <img class="img-fluid w-100" src="{{ img }}" style="height:180px;object-fit:cover;" alt="recette">
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

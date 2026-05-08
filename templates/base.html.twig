@@ -1,24 +1,340 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}RecipeHub{% endblock %} — Plateforme de Recettes</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Emblema+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-        {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
-        {% if frankenphpHotReload %}
-        <meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
-        {% endif %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Animate + OwlCarousel -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ── Variables ── */
+        :root { --ch-primary:#EF6603; --ch-dark:#222429; --ch-black:#111111; }
+
+        body { font-family:"Poppins",sans-serif; background:#fff; overflow-x:hidden; }
+        h1,h2,h3,.font-heading { font-family:"Emblema One",system-ui; font-weight:400; }
+        h4,h5,h6,.font-body    { font-family:"Poppins",sans-serif; font-weight:600; }
+
+        /* Spinner */
+        #spinner { opacity:0; visibility:hidden; transition:opacity .5s ease-out, visibility 0s linear .5s; z-index:99999; }
+        #spinner.show { visibility:visible; opacity:1; transition:opacity .5s ease-out, visibility 0s linear 0s; }
+
+        /* Buttons */
+        .btn { font-family:"Emblema One",system-ui; transition:.5s; }
+        .btn-primary { color:#fff; background:var(--ch-primary); border-color:var(--ch-primary); }
+        .btn-primary:hover { background:#c95502; border-color:#c95502; color:#fff; }
+        .btn-outline-primary { color:var(--ch-primary); border-color:var(--ch-primary); }
+        .btn-outline-primary:hover { background:var(--ch-primary); color:#fff; }
+        .btn-square { width:38px; height:38px; padding:0; text-align:center; }
+
+        /* Navbar */
+        .navbar-dark .navbar-nav .nav-link { margin-right:30px; padding:40px 0; color:#AAAAAA; font-size:17px; }
+        .navbar-dark .navbar-nav .nav-link:hover,
+        .navbar-dark .navbar-nav .nav-link.active { color:var(--ch-primary); }
+        @media(max-width:991.98px){ .navbar-dark .navbar-nav .nav-link { margin-right:0; padding:10px 0; } }
+        @media(min-width:992px){
+            .navbar .nav-item .dropdown-menu { display:block; visibility:hidden; top:100%; transform:rotateX(-75deg); transform-origin:0% 0%; transition:.5s; opacity:0; }
+            .navbar .nav-item:hover .dropdown-menu { transform:rotateX(0deg); visibility:visible; opacity:1; }
+        }
+
+        /* Section title */
+        .section-title { color:var(--ch-primary); font-weight:400; text-transform:uppercase; letter-spacing:.5rem; }
+
+        /* Animations */
+        .animate-up-down { position:relative; animation:animUp 1s ease infinite; }
+        @keyframes animUp { 0%{top:0} 50%{top:10px} 100%{top:0} }
+        .animate-rotate { position:absolute; animation:animRot 8s linear infinite; }
+        @keyframes animRot { 100%{ transform:rotate(360deg); } }
+
+        /* Feature section */
+        .feature { margin-bottom:135px; }
+        .feature::after { position:absolute; content:""; width:100%; height:calc(100% - 45px); top:135px; left:0; background:var(--ch-dark); z-index:-1; }
+        .feature .feature-item { background:linear-gradient(#f8f9fa 50%, var(--ch-dark)); }
+
+        /* Menu tabs */
+        .menu .tab-content img { transition:.5s; }
+        .menu .tab-content img:hover { opacity:.7; }
+
+        /* Team */
+        .team-item img { transform:scale(1.2); transition:.5s; }
+        .team-item:hover img { margin-top:-50px; margin-bottom:50px; }
+        .team-item .team-overlay { position:absolute; top:calc(100% - 100px); bottom:100px; left:0; right:0; display:flex; align-items:center; justify-content:center; background:rgba(34,36,41,.9); transition:.5s; opacity:0; }
+        .team-item:hover .team-overlay { top:0; opacity:1; }
+
+        /* Blog cards */
+        .blog-item { overflow:hidden; }
+        .blog-item img { transition:.5s; }
+        .blog-item:hover img { transform:scale(1.1); }
+
+        /* Instagram strip */
+        .instagram img { transition:.5s; }
+        .instagram img:hover { opacity:.8; }
+
+        /* Back to top */
+        .back-to-top { position:fixed; display:none; right:30px; bottom:0; border-radius:0; z-index:99; }
+
+        /* ── Recipe cards ── */
+        .recipe-card { background:var(--ch-dark); border-radius:6px; overflow:hidden; transition:.3s; height:100%; }
+        .recipe-card:hover { transform:translateY(-5px); box-shadow:0 12px 35px rgba(0,0,0,.5); }
+        .recipe-card .r-img { height:220px; object-fit:cover; width:100%; transition:.5s; }
+        .recipe-card:hover .r-img { opacity:.75; }
+        .recipe-card .r-placeholder { height:220px; display:flex; align-items:center; justify-content:center; font-size:4rem; background:var(--ch-black); }
+        .recipe-card .r-body { padding:20px; }
+        .recipe-card .r-title { color:#eee; font-family:"Poppins",sans-serif; font-weight:600; font-size:1rem; }
+        .recipe-card .r-title a { color:#eee; text-decoration:none; }
+        .recipe-card .r-title a:hover { color:var(--ch-primary); }
+        .recipe-card .r-meta { color:#888; font-size:.82rem; }
+
+        /* Diff badges */
+        .bdiff-facile    { background:rgba(92,184,92,.15); color:#5cb85c; border:1px solid #5cb85c; font-size:.72rem; padding:.2em .55em; border-radius:20px; }
+        .bdiff-moyen     { background:rgba(255,193,7,.12); color:#ffc107; border:1px solid #ffc107; font-size:.72rem; padding:.2em .55em; border-radius:20px; }
+        .bdiff-difficile { background:rgba(220,53,69,.15); color:#dc3545; border:1px solid #dc3545; font-size:.72rem; padding:.2em .55em; border-radius:20px; }
+
+        /* Tag badge */
+        .tag-badge { font-size:.7rem; padding:.2em .55em; border-radius:20px; color:#fff; font-family:"Poppins",sans-serif; }
+
+        /* Forms dark */
+        .form-dark .form-control,
+        .form-dark .form-select { background:#111; border-color:#333; color:#bbb; }
+        .form-dark .form-control:focus,
+        .form-dark .form-select:focus { background:#111; border-color:var(--ch-primary); color:#eee; box-shadow:0 0 0 .2rem rgba(239,102,3,.2); }
+        .form-dark .form-control::placeholder { color:#555; }
+        .form-dark label { color:#aaa; }
+
+        /* Page header banner */
+        .page-header { background:linear-gradient(rgba(34,36,41,.88),rgba(34,36,41,.88)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600') center/cover no-repeat; }
+
+        /* Nav favori badge */
+        .fav-dot { position:absolute; top:28px; right:-6px; width:16px; height:16px; background:var(--ch-primary); border-radius:50%; font-size:9px; color:#fff; display:flex; align-items:center; justify-content:center; }
+
+        /* Footer credit */
+        @media(min-width:991.98px){ .credit { background:var(--ch-black); } }
+
+        /* Stats counter blocks */
+        .stat-block { background:var(--ch-black); border-radius:8px; padding:20px 24px; }
+        .stat-block .stat-val { font-size:2.2rem; font-weight:700; color:#AAAAAA; font-family:"Emblema One",system-ui; }
+        .stat-block .stat-lbl { color:#666; font-size:.8rem; text-transform:uppercase; letter-spacing:.1rem; }
+    </style>
+
+    {% block stylesheets %}{% endblock %}
+    {{ importmap('app') }}
+</head>
+<body>
+
+<!-- Spinner -->
+<div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"></div>
+</div>
+
+{# ══════════════════════════ HEADER ══════════════════════════ #}
+<div class="container-fluid bg-dark px-0">
+    <div class="row gx-0 wow fadeIn" data-wow-delay="0.1s">
+
+        {# Logo bloc #}
+        <div class="col-lg-3 bg-primary d-none d-lg-block">
+            <a href="{{ path('app_home') }}" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
+                <h1 class="m-0 display-4 text-white text-uppercase">RecipeHub</h1>
+            </a>
+        </div>
+
+        <div class="col-lg-9">
+            {# Top bar #}
+            <div class="row gx-0 d-none d-lg-flex bg-dark">
+                <div class="col-6 px-5 text-start">
+                    <div class="h-100 d-inline-flex align-items-center py-2 me-4">
+                        <i class="fa fa-envelope text-primary me-2"></i>
+                        <p class="mb-0 text-secondary">noreply@recipehub.com</p>
+                    </div>
+                </div>
+                <div class="col-6 px-5 text-end">
+                    <div class="h-100 d-inline-flex align-items-center py-2">
+                        {% if is_granted('ROLE_USER') %}
+                            <i class="fa fa-user text-primary me-2"></i>
+                            <p class="mb-0 text-secondary">{{ app.user.pseudo }}</p>
+                        {% else %}
+                            <i class="fa fa-lock text-primary me-2"></i>
+                            <p class="mb-0 text-secondary">Connexion / Inscription</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# Navbar #}
+            <nav class="navbar navbar-expand-lg navbar-dark p-3 p-lg-0 px-lg-5" style="background:#111111;">
+                <a href="{{ path('app_home') }}" class="navbar-brand d-block d-lg-none">
+                    <h1 class="m-0 display-4 text-primary text-uppercase">RecipeHub</h1>
+                </a>
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                    <div class="navbar-nav mr-auto py-0">
+                        <a href="{{ path('app_home') }}" class="nav-item nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}">Accueil</a>
+                        <a href="{{ path('recette_index') }}" class="nav-item nav-link {% if 'recette' in app.request.attributes.get('_route') %}active{% endif %}">Recettes</a>
+
+                        {% if is_granted('ROLE_CUISINIER') %}
+                            <a href="{{ path('recette_new') }}" class="nav-item nav-link">
+                                <i class="bi bi-plus-circle"></i> Nouvelle recette
+                            </a>
+                        {% endif %}
+
+                        {% if is_granted('ROLE_USER') %}
+                            {% set favCount = app.session.get('favoris', [])|length %}
+                            <a href="{{ path('recette_favoris') }}" class="nav-item nav-link position-relative">
+                                ⭐ Favoris
+                                {% if favCount > 0 %}
+                                    <span class="fav-dot">{{ favCount }}</span>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Admin</a>
+                                <div class="dropdown-menu rounded-0 m-0" style="background:#1a1a1a; border-color:#333;">
+                                    <a href="{{ path('categorie_index') }}" class="dropdown-item text-secondary">
+                                        <i class="bi bi-grid text-primary me-1"></i> Catégories
+                                    </a>
+                                    <a href="{{ path('tag_index') }}" class="dropdown-item text-secondary">
+                                        <i class="bi bi-tags text-primary me-1"></i> Tags
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex align-items-center py-2 gap-2">
+                        {% if is_granted('ROLE_USER') %}
+                            <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-box-arrow-right"></i> Déconnexion
+                            </a>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="btn btn-outline-secondary btn-sm me-1">Connexion</a>
+                            <a href="{{ path('app_register') }}" class="btn btn-primary btn-sm">Inscription</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+{# Header End #}
+
+{# Flash messages #}
+{% for type, messages in app.flashes %}
+    {% for msg in messages %}
+    <div class="alert alert-{{ type == 'success' ? 'success' : (type == 'error' ? 'danger' : 'info') }} alert-dismissible fade show mb-0 rounded-0" role="alert" style="z-index:1040;">
+        <div class="container">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    {% endfor %}
+{% endfor %}
+
+{# ══════════════════════════ CONTENT ══════════════════════════ #}
+{% block body %}{% endblock %}
+
+{# ══════════════════════════ FOOTER ══════════════════════════ #}
+<div class="container-fluid bg-dark text-secondary px-5 mt-5">
+    <div class="row gx-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="col-lg-8 col-md-6">
+            <div class="row gx-5">
+                <div class="col-lg-4 col-md-12 pt-5 mb-5">
+                    <h3 class="text-light mb-4">Contact</h3>
+                    <div class="d-flex mb-2"><i class="bi bi-geo-alt text-primary me-2"></i><p class="mb-0">Paris, France</p></div>
+                    <div class="d-flex mb-2"><i class="bi bi-envelope-open text-primary me-2"></i><p class="mb-0">noreply@recipehub.com</p></div>
+                    <div class="d-flex mt-4">
+                        <a class="btn btn-primary btn-square rounded-circle me-2" href="#"><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-primary btn-square rounded-circle me-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-primary btn-square rounded-circle" href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 pt-0 pt-lg-5 mb-5">
+                    <h3 class="text-light mb-4">Navigation</h3>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-secondary mb-2" href="{{ path('app_home') }}"><i class="bi bi-arrow-right text-primary me-2"></i>Accueil</a>
+                        <a class="text-secondary mb-2" href="{{ path('recette_index') }}"><i class="bi bi-arrow-right text-primary me-2"></i>Recettes</a>
+                        {% if is_granted('ROLE_USER') %}<a class="text-secondary mb-2" href="{{ path('recette_favoris') }}"><i class="bi bi-arrow-right text-primary me-2"></i>Mes favoris</a>{% endif %}
+                        {% if is_granted('ROLE_CUISINIER') %}<a class="text-secondary" href="{{ path('recette_new') }}"><i class="bi bi-arrow-right text-primary me-2"></i>Nouvelle recette</a>{% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 pt-0 pt-lg-5 mb-5">
+                    <h3 class="text-light mb-4">Compte</h3>
+                    <div class="d-flex flex-column justify-content-start">
+                        {% if is_granted('ROLE_USER') %}
+                            <span class="text-secondary mb-2"><i class="bi bi-person text-primary me-2"></i>{{ app.user.pseudo }}</span>
+                            <a class="text-secondary" href="{{ path('app_logout') }}"><i class="bi bi-arrow-right text-primary me-2"></i>Déconnexion</a>
+                        {% else %}
+                            <a class="text-secondary mb-2" href="{{ path('app_login') }}"><i class="bi bi-arrow-right text-primary me-2"></i>Connexion</a>
+                            <a class="text-secondary" href="{{ path('app_register') }}"><i class="bi bi-arrow-right text-primary me-2"></i>Inscription</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-5" style="background:#111111;">
+                <h3 class="text-white mb-4">Newsletter</h3>
+                <h6 class="text-uppercase text-light mb-2">Restez informé</h6>
+                <p class="small text-secondary">Recevez les nouvelles recettes dans votre boîte mail</p>
+                <form><div class="input-group">
+                    <input type="email" class="form-control border-secondary p-3" placeholder="Votre email">
+                    <button class="btn btn-primary">OK</button>
+                </div></form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid py-4 py-lg-0 px-5" style="background:#111111;">
+    <div class="row gx-5">
+        <div class="col-lg-8"><div class="py-lg-4 text-center">
+            <p class="text-secondary mb-0">&copy; {{ "now"|date("Y") }} <a class="text-light fw-bold" href="{{ path('app_home') }}">RecipeHub</a>. Tous droits réservés.</p>
+        </div></div>
+        <div class="col-lg-4"><div class="py-lg-4 text-center credit">
+            <p class="text-light mb-0">Design <a class="text-primary fw-bold" href="https://htmlcodex.com" target="_blank">Chefer Template</a></p>
+        </div></div>
+    </div>
+</div>
+
+<a href="#" class="btn btn-dark py-3 fs-4 back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+<!-- JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<script>
+new WOW().init();
+$(window).on('load',function(){ $('#spinner').removeClass('show'); });
+$(window).scroll(function(){
+    $(this).scrollTop()>300 ? $('.back-to-top').fadeIn('slow') : $('.back-to-top').fadeOut('slow');
+});
+$('.back-to-top').click(function(){ $('html,body').animate({scrollTop:0},1500,'easeInOutExpo'); return false; });
+$(".testimonial-carousel").owlCarousel({
+    autoplay:true,smartSpeed:1000,dots:false,loop:true,nav:true,
+    navText:['<i class="bi bi-chevron-left"></i>','<i class="bi bi-chevron-right"></i>'],
+    responsive:{0:{items:1}}
+});
+</script>
+{% block javascripts %}{% endblock %}
+</body>
 </html>

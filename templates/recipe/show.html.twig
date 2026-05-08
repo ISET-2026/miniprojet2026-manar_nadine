@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ recette.titre }}{% endblock %}
+
+{% block body %}
+
+{# ── Page Header ── #}
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        {% if recette.categorie %}
+            <h5 class="section-title">{{ recette.categorie.icone }} {{ recette.categorie.nom }}</h5>
+        {% endif %}
+        <h1 class="display-3 text-white mb-3">{{ recette.titre }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item"><a class="text-primary" href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a class="text-primary" href="{{ path('recette_index') }}">Recettes</a></li>
+                <li class="breadcrumb-item text-secondary active">{{ recette.titre|slice(0,30) }}{% if recette.titre|length > 30 %}…{% endif %}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+
+    {# ── En-tête recette ── #}
+    <div class="row gx-5 mb-5">
+
+        {# Image #}
+        <div class="col-lg-5 mb-4 mb-lg-0 wow fadeIn" data-wow-delay="0.1s" style="min-height:400px;">
+            <div class="position-relative h-100">
+                {% if recette.imageName %}
+                    <img class="position-absolute w-100 h-100 rounded"
+                         src="/uploads/recettes/{{ recette.imageName }}"
+                         style="object-fit:cover;" alt="{{ recette.titre }}">
+                {% else %}
+                    <div class="position-absolute w-100 h-100 rounded d-flex align-items-center justify-content-center"
+                         style="background:#111;font-size:6rem;">
+                        {{ recette.categorie ? recette.categorie.icone : '🍽️' }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Infos #}
+        <div class="col-lg-7 wow fadeIn" data-wow-delay="0.3s">
+            <div class="mb-4">
+                <h5 class="section-title">{{ recette.auteur ? 'par ' ~ recette.auteur.pseudo : 'RecipeHub' }}</h5>
+                <h1 class="display-4 mb-0">{{ recette.titre }}</h1>
+            </div>
+
+            {# Tags #}
+            {% if recette.tags is not empty %}
+            <div class="mb-3">
+                {% for tag in recette.tags %}
+                    <span class="tag-badge" style="background-color:{{ tag.couleur }};">{{ tag.nom }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <p class="text-secondary mb-4">{{ recette.description }}</p>
+
+            {# Meta badges #}
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="text-center p-3" style="background:#111;border-radius:8px;">
+                        <div class="text-primary fs-4"><i class="bi bi-clock"></i></div>
+                        <div class="text-white fw-bold">{{ recette.tempsPreparation|cooking_time_format }}</div>
+                        <div class="text-secondary" style="font-size:.7rem;">Préparation</div>
+                    </div>
+                </div>
+                {% if recette.tempsCuisson %}
+                <div class="col-6 col-md-3">
+                    <div class="text-center p-3" style="background:#111;border-radius:8px;">
+                        <div class="text-primary fs-4"><i class="bi bi-fire"></i></div>
+                        <div class="text-white fw-bold">{{ recette.tempsCuisson|cooking_time_format }}</div>
+                        <div class="text-secondary" style="font-size:.7rem;">Cuisson</div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-6 col-md-3">
+                    <div class="text-center p-3" style="background:#111;border-radius:8px;">
+                        <div class="text-primary fs-4">⏱️</div>
+                        <div class="text-white fw-bold">{{ tempsTotal|cooking_time_format }}</div>
+                        <div class="text-secondary" style="font-size:.7rem;">Total</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-center p-3" style="background:#111;border-radius:8px;">
+                        <div class="text-primary fs-4"><i class="bi bi-people"></i></div>
+                        <div class="text-white fw-bold">{{ recette.nbPersonnes }}</div>
+                        <div class="text-secondary" style="font-size:.7rem;">Personnes</div>
+                    </div>
+                </div>
+            </div>
+
+            {# Difficulté + étoiles #}
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="bdiff-{{ recette.difficulte }} px-3 py-1" style="font-size:.85rem;">
+                    {% if recette.difficulte == 'facile' %}🟢{% elseif recette.difficulte == 'moyen' %}🟡{% else %}🔴{% endif %}
+                    {{ recette.difficulte|capitalize }}
+                </span>
+                <span class="text-secondary">{{ difficulty_stars(recette.difficulte) }} — {{ recette.dateCreation|time_ago }}</span>
+            </div>
+
+            {# Boutons d'action #}
+            <div class="d-flex flex-wrap gap-2">
+                {% if is_granted('ROLE_USER') %}
+                    <form method="post" action="{{ path('recette_favori_toggle', {id: recette.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('favori' ~ recette.id) }}">
+                        <button type="submit" class="btn {{ isFavori ? 'btn-warning' : 'btn-outline-secondary' }}">
+                            {% if isFavori %}⭐ Dans vos favoris{% else %}☆ Ajouter aux favoris{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if is_granted('edit', recette) %}
+                    <a href="{{ path('recette_edit', {id: recette.id}) }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                {% endif %}
+
+                {% if is_granted('delete', recette) %}
+                    <form method="post" action="{{ path('recette_delete', {id: recette.id}) }}" id="form-del-{{ recette.id }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recette.id) }}">
+                        <button type="button" class="btn btn-outline-danger btn-delete-confirm"
+                                data-form-id="form-del-{{ recette.id }}"
+                                data-title="Supprimer cette recette ?"
+                                data-text="« {{ recette.titre }} » sera supprimée définitivement.">
+                            <i class="bi bi-trash"></i> Supprimer
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if is_granted('ROLE_CUISINIER') and (is_granted('edit', recette)) %}
+                    <a href="{{ path('ingredient_new', {id: recette.id}) }}" class="btn btn-outline-primary">
+                        <i class="bi bi-plus"></i> Ingrédient
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# ── Ingrédients + Instructions ── #}
+    <div class="row gx-5 mb-5">
+
+        {# Ingrédients (gauche) #}
+        <div class="col-lg-4 mb-4 mb-lg-0 wow fadeIn" data-wow-delay="0.1s">
+            <div style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0">
+                        🛒 Ingrédients
+                        <small class="text-primary">({{ recette.ingredients|length }})</small>
+                    </h4>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    {% for ingredient in recette.ingredients %}
+                    <li class="d-flex justify-content-between align-items-center px-4 py-3" style="border-bottom:1px solid #333;">
+                        <span class="text-secondary">{{ ingredient.nom }}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong class="text-primary">{{ ingredient.quantite }}</strong>
+                            {% if is_granted('edit', recette) %}
+                                <form method="post" action="{{ path('ingredient_delete', {id: ingredient.id}) }}" id="form-ing-{{ ingredient.id }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-ingredient-' ~ ingredient.id) }}">
+                                    <button type="button" class="btn btn-link btn-sm text-danger p-0 btn-delete-confirm"
+                                            data-form-id="form-ing-{{ ingredient.id }}"
+                                            data-title="Supprimer cet ingrédient ?"
+                                            data-text="{{ ingredient.nom }}">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="px-4 py-3 text-secondary">Aucun ingrédient renseigné.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        {# Instructions (droite) #}
+        <div class="col-lg-8 wow fadeIn" data-wow-delay="0.3s">
+            <div style="background:#222429;border-radius:8px;overflow:hidden;height:100%;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0">📋 Instructions</h4>
+                </div>
+                <div class="p-4 text-secondary" style="white-space:pre-line;line-height:1.9;">
+                    {{ recette.instructions }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ── Retour ── #}
+    <div class="mb-5">
+        <a href="{{ path('recette_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour aux recettes
+        </a>
+    </div>
+
+</div>
+{% endblock %}

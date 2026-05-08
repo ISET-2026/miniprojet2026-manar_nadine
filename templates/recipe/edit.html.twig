@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier — {{ recette.titre }}{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h5 class="section-title">Modification</h5>
+        <h1 class="display-3 text-white mb-0">{{ recette.titre|slice(0,40) }}{% if recette.titre|length > 40 %}…{% endif %}</h1>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            {% if recette.imageName %}
+            <div class="mb-4 p-4 d-flex align-items-center gap-4 wow fadeIn" style="background:#222429;border-radius:8px;">
+                <img src="/uploads/recettes/{{ recette.imageName }}" width="100" height="70"
+                     style="object-fit:cover;border-radius:6px;" alt="Image actuelle">
+                <div>
+                    <h6 class="text-white mb-1">Image actuelle</h6>
+                    <p class="text-secondary small mb-0">Uploadez une nouvelle image pour la remplacer.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {{ form_start(form, {attr: {class: 'form-dark', enctype: 'multipart/form-data'}}) }}
+
+            <div class="mb-4 wow fadeIn" data-wow-delay="0.1s" style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-info-circle text-primary me-2"></i>Informations générales</h4>
+                </div>
+                <div class="p-4 row g-3">
+                    <div class="col-12">
+                        <label class="form-label text-secondary">Titre *</label>
+                        {{ form_widget(form.titre, {attr: {class: 'form-control'}}) }}
+                        {{ form_errors(form.titre) }}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-secondary">Description *</label>
+                        {{ form_widget(form.description, {attr: {class: 'form-control', rows: 3}}) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-secondary">Catégorie</label>
+                        {{ form_widget(form.categorie, {attr: {class: 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-secondary">Difficulté *</label>
+                        {{ form_widget(form.difficulte, {attr: {class: 'form-select'}}) }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-secondary">Nombre de personnes *</label>
+                        {{ form_widget(form.nbPersonnes, {attr: {class: 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary">Temps de préparation (min) *</label>
+                        {{ form_widget(form.tempsPreparation, {attr: {class: 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary">Temps de cuisson (min)</label>
+                        {{ form_widget(form.tempsCuisson, {attr: {class: 'form-control'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4 wow fadeIn" data-wow-delay="0.2s" style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-list-ol text-primary me-2"></i>Instructions</h4>
+                </div>
+                <div class="p-4">
+                    {{ form_widget(form.instructions, {attr: {class: 'form-control', rows: 10}}) }}
+                </div>
+            </div>
+
+            <div class="mb-4 wow fadeIn" data-wow-delay="0.3s" style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-tags text-primary me-2"></i>Tags</h4>
+                </div>
+                <div class="p-4 d-flex flex-wrap gap-3">
+                    {% for tag in form.tags %}
+                        <div class="form-check">
+                            {{ form_widget(tag, {attr: {class: 'form-check-input'}}) }}
+                            {{ form_label(tag, null, {label_attr: {class: 'form-check-label text-secondary'}}) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mb-4 wow fadeIn" data-wow-delay="0.4s" style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0"><i class="bi bi-image text-primary me-2"></i>Image & Publication</h4>
+                </div>
+                <div class="p-4 row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label text-secondary">Nouvelle image</label>
+                        {{ form_widget(form.imageFile, {attr: {class: 'form-control', accept: 'image/*'}}) }}
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check">
+                            {{ form_widget(form.publiee, {attr: {class: 'form-check-input'}}) }}
+                            <label class="form-check-label text-secondary" for="{{ form.publiee.vars.id }}">Publier la recette</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 mb-5">
+                <button type="submit" class="btn btn-primary py-3 px-5">
+                    <i class="bi bi-save"></i> Enregistrer
+                </button>
+                <a href="{{ path('recette_show', {id: recette.id}) }}" class="btn btn-outline-secondary py-3 px-4">Annuler</a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

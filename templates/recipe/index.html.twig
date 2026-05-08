@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+{% block title %}Recettes{% endblock %}
+
+{% block body %}
+
+{# ── Page Header ── #}
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h5 class="section-title">Notre Collection</h5>
+        <h1 class="display-3 text-white mb-3">Toutes les Recettes</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item"><a class="text-primary" href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item text-secondary active">Recettes</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container-fluid px-5">
+
+    {# ── Recherche ── #}
+    <div class="row mb-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="col-12">
+            <div class="p-4" style="background:#222429;border-radius:8px;">
+                {{ form_start(searchForm, {attr: {class: 'row g-3 align-items-end form-dark'}}) }}
+                    <div class="col-lg-4 col-md-6">
+                        <label class="form-label text-secondary small">🔍 Titre</label>
+                        {{ form_widget(searchForm.titre, {attr: {class: 'form-control'}}) }}
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <label class="form-label text-secondary small">Catégorie</label>
+                        {{ form_widget(searchForm.categorie, {attr: {class: 'form-select'}}) }}
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-secondary small">Difficulté</label>
+                        {{ form_widget(searchForm.difficulte, {attr: {class: 'form-select'}}) }}
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-secondary small">Tag</label>
+                        {{ form_widget(searchForm.tag, {attr: {class: 'form-select'}}) }}
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Rechercher
+                        </button>
+                    </div>
+                {{ form_end(searchForm) }}
+            </div>
+        </div>
+    </div>
+
+    {# ── Tri + Compteur ── #}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="text-secondary mb-0">
+            <strong class="text-primary">{{ pagination.getTotalItemCount }}</strong>
+            recette{{ pagination.getTotalItemCount > 1 ? 's' : '' }} trouvée{{ pagination.getTotalItemCount > 1 ? 's' : '' }}
+        </p>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="text-secondary small">Trier par :</span>
+            <div class="btn-group btn-group-sm">
+                {{ knp_pagination_sortable(pagination, 'Titre', 'r.titre', {}, {class: 'btn btn-outline-secondary btn-sm'}) }}
+                {{ knp_pagination_sortable(pagination, 'Date', 'r.dateCreation', {}, {class: 'btn btn-outline-secondary btn-sm'}) }}
+                {{ knp_pagination_sortable(pagination, 'Temps', 'r.tempsPreparation', {}, {class: 'btn btn-outline-secondary btn-sm'}) }}
+            </div>
+            {% if is_granted('ROLE_CUISINIER') %}
+                <a href="{{ path('recette_new') }}" class="btn btn-primary btn-sm ms-2">
+                    <i class="bi bi-plus-circle"></i> Nouvelle
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ── Grille recettes ── #}
+    <div class="row g-4">
+        {% for recette in pagination %}
+            {% include 'recipe/_card.html.twig' %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <div style="font-size:4rem;">🔍</div>
+                <h4 class="text-secondary mt-3">Aucune recette ne correspond à votre recherche.</h4>
+                <a href="{{ path('recette_index') }}" class="btn btn-primary mt-3">Voir toutes les recettes</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# ── Pagination ── #}
+    <div class="d-flex justify-content-center mt-5 mb-4">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+</div>
+{% endblock %}
