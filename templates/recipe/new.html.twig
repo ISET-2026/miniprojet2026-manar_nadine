@@ -16,10 +16,12 @@
 
             {{ form_start(form, {attr: {class: 'form-dark', enctype: 'multipart/form-data'}}) }}
 
-            {# Section 1 : Informations #}
+            {# Section 1 : Informations générales #}
             <div class="mb-4 wow fadeIn" data-wow-delay="0.1s" style="background:#222429;border-radius:8px;overflow:hidden;">
                 <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
-                    <h4 class="text-white mb-0"><i class="bi bi-info-circle text-primary me-2"></i>Informations générales</h4>
+                    <h4 class="text-white mb-0">
+                        <i class="bi bi-info-circle text-primary me-2"></i>Informations générales
+                    </h4>
                 </div>
                 <div class="p-4 row g-3">
                     <div class="col-12">
@@ -58,7 +60,9 @@
             {# Section 2 : Instructions #}
             <div class="mb-4 wow fadeIn" data-wow-delay="0.2s" style="background:#222429;border-radius:8px;overflow:hidden;">
                 <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
-                    <h4 class="text-white mb-0"><i class="bi bi-list-ol text-primary me-2"></i>Instructions de préparation</h4>
+                    <h4 class="text-white mb-0">
+                        <i class="bi bi-list-ol text-primary me-2"></i>Instructions de préparation
+                    </h4>
                 </div>
                 <div class="p-4">
                     {{ form_widget(form.instructions, {attr: {class: 'form-control', rows: 10, placeholder: 'Décrivez les étapes de préparation...'}}) }}
@@ -66,10 +70,51 @@
                 </div>
             </div>
 
-            {# Section 3 : Tags #}
+            {# Section 3 : Ingrédients #}
             <div class="mb-4 wow fadeIn" data-wow-delay="0.3s" style="background:#222429;border-radius:8px;overflow:hidden;">
                 <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
-                    <h4 class="text-white mb-0"><i class="bi bi-tags text-primary me-2"></i>Tags</h4>
+                    <h4 class="text-white mb-0">
+                        <i class="bi bi-basket text-primary me-2"></i>Ingrédients
+                    </h4>
+                </div>
+                <div class="p-4">
+                    <div id="ingredients-container"
+                         data-prototype="{{ form_widget(form.ingredients.vars.prototype)|e('html_attr') }}">
+                        {% for ingredient in form.ingredients %}
+                            <div class="ingredient-item row g-2 mb-3 align-items-center">
+                                <div class="col-5">
+                                    {{ form_widget(ingredient.nom, {attr: {
+                                        class: 'form-control',
+                                        placeholder: 'Nom (ex: Farine)'
+                                    }}) }}
+                                </div>
+                                <div class="col-5">
+                                    {{ form_widget(ingredient.quantite, {attr: {
+                                        class: 'form-control',
+                                        placeholder: 'Quantité (ex: 200g)'
+                                    }}) }}
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-outline-danger w-100 remove-ingredient">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" id="add-ingredient" class="btn btn-outline-primary mt-3">
+                        <i class="bi bi-plus-circle me-2"></i>Ajouter un ingrédient
+                    </button>
+                </div>
+            </div>
+
+            {# Section 4 : Tags #}
+            <div class="mb-4 wow fadeIn" data-wow-delay="0.4s" style="background:#222429;border-radius:8px;overflow:hidden;">
+                <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
+                    <h4 class="text-white mb-0">
+                        <i class="bi bi-tags text-primary me-2"></i>Tags
+                    </h4>
                 </div>
                 <div class="p-4 d-flex flex-wrap gap-3">
                     {% for tag in form.tags %}
@@ -81,10 +126,12 @@
                 </div>
             </div>
 
-            {# Section 4 : Image + Publication #}
-            <div class="mb-4 wow fadeIn" data-wow-delay="0.4s" style="background:#222429;border-radius:8px;overflow:hidden;">
+            {# Section 5 : Image + Publication #}
+            <div class="mb-4 wow fadeIn" data-wow-delay="0.5s" style="background:#222429;border-radius:8px;overflow:hidden;">
                 <div class="p-4" style="background:#111;border-bottom:2px solid var(--ch-primary);">
-                    <h4 class="text-white mb-0"><i class="bi bi-image text-primary me-2"></i>Image & Publication</h4>
+                    <h4 class="text-white mb-0">
+                        <i class="bi bi-image text-primary me-2"></i>Image & Publication
+                    </h4>
                 </div>
                 <div class="p-4 row g-3">
                     <div class="col-md-8">
@@ -104,15 +151,89 @@
             </div>
 
             {# Boutons #}
-            <div class="d-flex gap-3 mb-5 wow fadeIn" data-wow-delay="0.5s">
+            <div class="d-flex gap-3 mb-5 wow fadeIn" data-wow-delay="0.6s">
                 <button type="submit" class="btn btn-primary py-3 px-5">
                     <i class="bi bi-save"></i> Créer la recette
                 </button>
-                <a href="{{ path('recette_index') }}" class="btn btn-outline-secondary py-3 px-4">Annuler</a>
+                <a href="{{ path('recette_index') }}" class="btn btn-outline-secondary py-3 px-4">
+                    Annuler
+                </a>
             </div>
 
             {{ form_end(form) }}
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const container = document.getElementById('ingredients-container');
+    let index = container.querySelectorAll('.ingredient-item').length;
+
+    // ── Ajouter un ingrédient ──────────────────────────────────────────────
+    document.getElementById('add-ingredient').addEventListener('click', function () {
+
+        let prototype = container.dataset.prototype;
+        prototype = prototype.replace(/__name__/g, index);
+        index++;
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = prototype;
+
+        const div = document.createElement('div');
+        div.classList.add('ingredient-item', 'row', 'g-2', 'mb-3', 'align-items-center');
+
+        // Récupérer les inputs générés
+        const inputs = wrapper.querySelectorAll('input, select, textarea');
+
+        // Colonne nom
+        const colNom = document.createElement('div');
+        colNom.classList.add('col-5');
+        if (inputs[0]) {
+            inputs[0].classList.add('form-control');
+            inputs[0].placeholder = 'Nom (ex: Farine)';
+            colNom.appendChild(inputs[0]);
+        }
+
+        // Colonne quantité
+        const colQte = document.createElement('div');
+        colQte.classList.add('col-5');
+        if (inputs[1]) {
+            inputs[1].classList.add('form-control');
+            inputs[1].placeholder = 'Quantité (ex: 200g)';
+            colQte.appendChild(inputs[1]);
+        }
+
+        // Bouton supprimer
+        const colBtn = document.createElement('div');
+        colBtn.classList.add('col-2');
+        colBtn.innerHTML = `
+            <button type="button" class="btn btn-outline-danger w-100 remove-ingredient">
+                <i class="bi bi-trash"></i>
+            </button>`;
+
+        div.appendChild(colNom);
+        div.appendChild(colQte);
+        div.appendChild(colBtn);
+        container.appendChild(div);
+
+        // Bind supprimer
+        colBtn.querySelector('.remove-ingredient').addEventListener('click', function () {
+            div.remove();
+        });
+    });
+
+    // ── Supprimer ingrédients existants ───────────────────────────────────
+    container.querySelectorAll('.remove-ingredient').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btn.closest('.ingredient-item').remove();
+        });
+    });
+
+});
+</script>
 {% endblock %}

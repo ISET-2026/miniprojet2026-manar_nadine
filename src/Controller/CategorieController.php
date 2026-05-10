@@ -16,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class CategorieController extends AbstractController
 {
+    //pour ecrire dans la bd
     public function __construct(private EntityManagerInterface $em) {}
 
     #[Route('', name: 'categorie_index', methods: ['GET', 'POST'])]
@@ -26,6 +27,7 @@ class CategorieController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //enregistre dans bd
             $this->em->persist($categorie);
             $this->em->flush();
             $this->addFlash('success', '✅ Catégorie "' . $categorie->getNom() . '" créée !');

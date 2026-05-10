@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Form;
-
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use App\Entity\CategorieRecette;
 use App\Entity\Recette;
 use App\Entity\TagRecette;
@@ -77,6 +77,14 @@ class RecetteType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-check-input'],
             ])
+->add('ingredients', CollectionType::class, [
+    'entry_type'    => IngredientType::class,
+    'allow_add'     => true,
+    'allow_delete'  => true,
+    'by_reference'  => false,
+    'label'         => 'Ingrédients',
+    'entry_options' => ['label' => false],
+])
             ->add('imageFile', FileType::class, [
                 'label' => 'Image (JPEG, PNG, WebP — max 2 Mo)',
                 'mapped' => false,

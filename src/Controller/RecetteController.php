@@ -5,9 +5,7 @@ namespace App\Controller;
 use App\Entity\Recette;
 use App\Form\RecetteSearchType;
 use App\Form\RecetteType;
-use App\Repository\CategorieRecetteRepository;
 use App\Repository\RecetteRepository;
-use App\Repository\TagRecetteRepository;
 use App\Service\FileUploader;
 use App\Service\RecetteAnalyser;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,16 +39,16 @@ class RecetteController extends AbstractController
         $form->handleRequest($request);
 
         $data = $form->getData() ?? [];
-        $titre    = $data['titre']     ?? null;
-        $categorie= $data['categorie'] ?? null;
-        $difficulte=$data['difficulte']?? null;
-        $tag      = $data['tag']       ?? null;
+        $titre     = $data['titre']      ?? null;
+        $categorie = $data['categorie']  ?? null;
+        $difficulte= $data['difficulte'] ?? null;
+        $tag       = $data['tag']        ?? null;
 
         if ($titre || $categorie || $difficulte || $tag) {
-            $recettes = $repo->findByFilters($titre, $categorie, $difficulte, $tag);
+            $recettes   = $repo->findByFilters($titre, $categorie, $difficulte, $tag);
             $pagination = $paginator->paginate($recettes, $request->query->getInt('page', 1), 9);
         } else {
-            $qb = $repo->findPublishedQueryBuilder();
+            $qb         = $repo->findPublishedQueryBuilder();
             $pagination = $paginator->paginate($qb, $request->query->getInt('page', 1), 9);
         }
 
@@ -65,14 +63,14 @@ class RecetteController extends AbstractController
     #[Route('/{id}', name: 'recette_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(Recette $recette, RequestStack $requestStack): Response
     {
-        $session = $requestStack->getSession();
-        $favoris = $session->get('favoris', []);
+        $session  = $requestStack->getSession();
+        $favoris  = $session->get('favoris', []);
         $isFavori = in_array($recette->getId(), $favoris);
 
         return $this->render('recipe/show.html.twig', [
-            'recette'   => $recette,
-            'tempsTotal'=> $this->analyser->getTempsTotal($recette),
-            'isFavori'  => $isFavori,
+            'recette'    => $recette,
+            'tempsTotal' => $this->analyser->getTempsTotal($recette),
+            'isFavori'   => $isFavori,
         ]);
     }
 
@@ -86,19 +84,30 @@ class RecetteController extends AbstractController
         MailerInterface $mailer,
     ): Response {
         $recette = new Recette();
-        $form = $this->createForm(RecetteType::class, $recette);
+        $form    = $this->createForm(RecetteType::class, $recette);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Upload image
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
                 $recette->setImageName($uploader->upload($imageFile));
             }
 
+            // Auteur
             $recette->setAuteur($this->getUser());
+
+            // Persist ingrédients
+            foreach ($recette->getIngredients() as $ingredient) {
+                $ingredient->setRecette($recette);
+                $this->em->persist($ingredient);
+            }
+
             $this->em->persist($recette);
             $this->em->flush();
 
+            // Email si publiée
             if ($recette->isPubliee()) {
                 $this->sendNewRecetteEmail($mailer, $recette);
             }
@@ -125,10 +134,12 @@ class RecetteController extends AbstractController
         $this->denyAccessUnlessGranted('edit', $recette);
 
         $wasPubliee = $recette->isPubliee();
-        $form = $this->createForm(RecetteType::class, $recette);
+        $form       = $this->createForm(RecetteType::class, $recette);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Upload nouvelle image
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
                 if ($recette->getImageName()) {
@@ -137,8 +148,15 @@ class RecetteController extends AbstractController
                 $recette->setImageName($uploader->upload($imageFile));
             }
 
+            // Persist ingrédients
+            foreach ($recette->getIngredients() as $ingredient) {
+                $ingredient->setRecette($recette);
+                $this->em->persist($ingredient);
+            }
+
             $this->em->flush();
 
+            // Email si nouvellement publiée
             if (!$wasPubliee && $recette->isPubliee()) {
                 $this->sendNewRecetteEmail($mailer, $recette);
             }
@@ -175,7 +193,7 @@ class RecetteController extends AbstractController
         return $this->redirectToRoute('recette_index');
     }
 
-    // ─── Favoris ──────────────────────────────────────────────────────────────
+    // ─── Favoris toggle ───────────────────────────────────────────────────────
 
     #[Route('/{id}/favori/toggle', name: 'recette_favori_toggle', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
@@ -183,10 +201,10 @@ class RecetteController extends AbstractController
     {
         $session = $requestStack->getSession();
         $favoris = $session->get('favoris', []);
-        $id = $recette->getId();
+        $id      = $recette->getId();
 
         if (in_array($id, $favoris)) {
-            $favoris = array_values(array_filter($favoris, fn ($f) => $f !== $id));
+            $favoris = array_values(array_filter($favoris, fn($f) => $f !== $id));
             $this->addFlash('info', '❌ Retiré des favoris.');
         } else {
             $favoris[] = $id;
@@ -207,7 +225,7 @@ class RecetteController extends AbstractController
         RecetteRepository $repo,
         PaginatorInterface $paginator,
     ): Response {
-        $session  = $requestStack->getSession();
+        $session    = $requestStack->getSession();
         $favorisIds = $session->get('favoris', []);
 
         $recettes = [];
@@ -221,9 +239,7 @@ class RecetteController extends AbstractController
             'pagination' => $pagination,
         ]);
     }
-
     // ─── Envoi email ──────────────────────────────────────────────────────────
-
     private function sendNewRecetteEmail(MailerInterface $mailer, Recette $recette): void
     {
         try {
@@ -233,7 +249,6 @@ class RecetteController extends AbstractController
                 ->subject('🍽️ Nouvelle recette : ' . $recette->getTitre())
                 ->htmlTemplate('emails/nouvelle_recette.html.twig')
                 ->context(['recette' => $recette]);
-
             $mailer->send($email);
         } catch (\Exception $e) {
             // Ne pas bloquer si l'email échoue

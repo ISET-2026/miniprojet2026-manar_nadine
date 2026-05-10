@@ -50,7 +50,8 @@ class IngredientController extends AbstractController
         $this->denyAccessUnlessGranted('edit', $recette);
 
         if ($this->isCsrfTokenValid('delete-ingredient-' . $ingredient->getId(), $request->request->get('_token'))) {
-            $this->em->remove($ingredient);
+            //effacer
+        $this->em->remove($ingredient);
             $this->em->flush();
             $this->addFlash('success', '🗑️ Ingrédient supprimé.');
         }
