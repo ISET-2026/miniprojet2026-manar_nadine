@@ -93,17 +93,23 @@
                 </div>
             </div>
 
-            {# Difficulté + étoiles #}
+            {# Difficulté #}
             <div class="d-flex align-items-center gap-3 mb-4">
                 <span class="bdiff-{{ recette.difficulte }} px-3 py-1" style="font-size:.85rem;">
-                    {% if recette.difficulte == 'facile' %}🟢{% elseif recette.difficulte == 'moyen' %}🟡{% else %}🔴{% endif %}
+                    {% if recette.difficulte == 'facile' %}🟢
+                    {% elseif recette.difficulte == 'moyen' %}🟡
+                    {% else %}🔴{% endif %}
                     {{ recette.difficulte|capitalize }}
                 </span>
-                <span class="text-secondary">{{ difficulty_stars(recette.difficulte) }} — {{ recette.dateCreation|time_ago }}</span>
+                <span class="text-secondary">
+                    {{ difficulty_stars(recette.difficulte) }} — {{ recette.dateCreation|time_ago }}
+                </span>
             </div>
 
             {# Boutons d'action #}
             <div class="d-flex flex-wrap gap-2">
+
+                {# Favori #}
                 {% if is_granted('ROLE_USER') %}
                     <form method="post" action="{{ path('recette_favori_toggle', {id: recette.id}) }}">
                         <input type="hidden" name="_token" value="{{ csrf_token('favori' ~ recette.id) }}">
@@ -113,29 +119,31 @@
                     </form>
                 {% endif %}
 
+                {# Modifier #}
                 {% if is_granted('edit', recette) %}
                     <a href="{{ path('recette_edit', {id: recette.id}) }}" class="btn btn-outline-secondary">
                         <i class="bi bi-pencil"></i> Modifier
                     </a>
                 {% endif %}
 
+                {# Supprimer #}
                 {% if is_granted('delete', recette) %}
-                    <form method="post" action="{{ path('recette_delete', {id: recette.id}) }}" id="form-del-{{ recette.id }}">
+                    <form method="post" action="{{ path('recette_delete', {id: recette.id}) }}">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recette.id) }}">
-                        <button type="button" class="btn btn-outline-danger btn-delete-confirm"
-                                data-form-id="form-del-{{ recette.id }}"
-                                data-title="Supprimer cette recette ?"
-                                data-text="« {{ recette.titre }} » sera supprimée définitivement.">
+                        <button type="submit" class="btn btn-outline-danger"
+                                onclick="return confirm('Supprimer « {{ recette.titre }} » définitivement ?')">
                             <i class="bi bi-trash"></i> Supprimer
                         </button>
                     </form>
                 {% endif %}
 
-                {% if is_granted('ROLE_CUISINIER') and (is_granted('edit', recette)) %}
+                {# Ajouter ingrédient #}
+                {% if is_granted('edit', recette) %}
                     <a href="{{ path('ingredient_new', {id: recette.id}) }}" class="btn btn-outline-primary">
                         <i class="bi bi-plus"></i> Ingrédient
                     </a>
                 {% endif %}
+
             </div>
         </div>
     </div>
@@ -154,17 +162,20 @@
                 </div>
                 <ul class="list-unstyled mb-0">
                     {% for ingredient in recette.ingredients %}
-                    <li class="d-flex justify-content-between align-items-center px-4 py-3" style="border-bottom:1px solid #333;">
+                    <li class="d-flex justify-content-between align-items-center px-4 py-3"
+                        style="border-bottom:1px solid #333;">
                         <span class="text-secondary">{{ ingredient.nom }}</span>
                         <div class="d-flex align-items-center gap-2">
                             <strong class="text-primary">{{ ingredient.quantite }}</strong>
                             {% if is_granted('edit', recette) %}
-                                <form method="post" action="{{ path('ingredient_delete', {id: ingredient.id}) }}" id="form-ing-{{ ingredient.id }}" class="d-inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-ingredient-' ~ ingredient.id) }}">
-                                    <button type="button" class="btn btn-link btn-sm text-danger p-0 btn-delete-confirm"
-                                            data-form-id="form-ing-{{ ingredient.id }}"
-                                            data-title="Supprimer cet ingrédient ?"
-                                            data-text="{{ ingredient.nom }}">
+                                <form method="post"
+                                      action="{{ path('ingredient_delete', {id: ingredient.id}) }}"
+                                      class="d-inline">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('delete-ingredient-' ~ ingredient.id) }}">
+                                    <button type="submit"
+                                            class="btn btn-link btn-sm text-danger p-0"
+                                            onclick="return confirm('Supprimer {{ ingredient.nom }} ?')">
                                         <i class="bi bi-x-circle"></i>
                                     </button>
                                 </form>
@@ -189,6 +200,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     {# ── Retour ── #}
